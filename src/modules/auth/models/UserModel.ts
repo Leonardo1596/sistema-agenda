@@ -21,11 +21,7 @@ const UserSchema = new Schema({
         type: Map,
         of: [String],
         default: {}
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+    }
 }, {
     timestamps: true,
 });
