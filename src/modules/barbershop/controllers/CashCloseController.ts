@@ -18,6 +18,7 @@ export class CashCloseController {
 
         // avoid closing twice
         const alreadyClosed = await DailyCashCloseModel.findOne({
+            barbershop: req.barbershopId,
             date: startOfDay
         });
 
@@ -28,8 +29,13 @@ export class CashCloseController {
         }
 
         const transactions = await TransactionModel.find({
+            barbershop: req.barbershopId,
             createdAt: { $gte: startOfDay, $lte: endOfDay }
         }).populate('barber');
+
+        if (!transactions.length) {
+            return res.status(404).json({ message: 'Transações nao encontradas' });
+        }
 
         let totalAmount = 0;
         let totalCommission = 0;
@@ -61,6 +67,7 @@ export class CashCloseController {
         }
 
         const cashClose = await DailyCashCloseModel.create({
+            barbershop: req.barbershopId,
             date: startOfDay,
             totalAmount,
             totalCommission,
@@ -79,6 +86,7 @@ export class CashCloseController {
 
         // avoid closing twice
         const alreadyClosed = await MonthlyCashCloseModel.findOne({
+            barbershop: req.barbershopId,
             year,
             month
         });
@@ -90,6 +98,7 @@ export class CashCloseController {
         }
 
         const closes = await DailyCashCloseModel.find({
+            barbershop: req.barbershopId,
             date: { $gte: startOfMonth, $lte: endOfMonth }
         }).populate('byBarber.barber')
 
@@ -130,6 +139,7 @@ export class CashCloseController {
         }
 
         const monthlyClose = await MonthlyCashCloseModel.create({
+            barbershop: req.barbershopId,
             year,
             month,
             daysClosed: closes.length,
@@ -146,6 +156,7 @@ export class CashCloseController {
         const { year, month } = req.params;
 
         const monthlyClose = await MonthlyCashCloseModel.findOne({
+            barbershop: req.barbershopId,
             month: Number(month),
             year: Number(year)
         }).populate('byBarber.barber');

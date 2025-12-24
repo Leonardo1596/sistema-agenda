@@ -4,8 +4,7 @@ import { AppointmentModel } from '../models/AppointmentModel'
 
 export class TransactionController {
     async list(req: Request, res: Response) {
-        const barbershopId = req.headers['barbershop-id'];
-        const transactions = await TransactionModel.find({ barbershop: barbershopId }).populate({
+        const transactions = await TransactionModel.find({ barbershop: req.barbershopId }).populate({
             path: 'appointment',
             populate: [
                 { path: 'service' },

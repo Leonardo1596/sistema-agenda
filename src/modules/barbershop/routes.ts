@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { resolveTenant } from './middlewares/Tenant';
 import { ServiceController } from './controllers/ServiceController';
 import { AppointmentController } from './controllers/AppointmentController';
 import { TransactionController } from './controllers/TransactionController';
@@ -9,6 +10,13 @@ import { ReportController } from './controllers/ReportController';
 import { CashCloseController } from './controllers/CashCloseController';
 
 const router = Router();
+
+// Barbershop
+const barbershopController = new BarbershopController();
+router.post('/barbershops', barbershopController.create);
+router.get('/barbershops', barbershopController.list);
+
+router.use(resolveTenant);
 
 // services
 const serviceController = new ServiceController();
@@ -25,11 +33,6 @@ router.put('/appointments/:id/cancel', appointmentController.cancel);
 // transactions
 const transactionController = new TransactionController();
 router.get('/transactions', transactionController.list);
-
-// Barbershop
-const barbershopController = new BarbershopController();
-router.post('/barbershops', barbershopController.create);
-router.get('/barbershops', barbershopController.list);
 
 // barber
 const barberController = new BarberController();
@@ -49,5 +52,7 @@ router.post('/reports/close-day', cashCloseController.closeDay);
 router.post('/reports/close-month', cashCloseController.closeMonth);
 router.post('/reports/monthly', reportController.monthly);
 router.get('/reports/get-monthly-closed/:year/:month', cashCloseController.getMonthly);
+
+
 
 export default router;

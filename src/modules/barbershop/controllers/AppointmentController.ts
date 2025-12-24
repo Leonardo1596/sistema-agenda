@@ -7,11 +7,11 @@ import { DailyCashCloseModel } from '../models/DailyCashCloseModel';
 
 export class AppointmentController {
     async create(req: Request, res: Response) {
-        const { barbershop, startAt, serviceId, barberId } = req.body;
+        const { startAt, serviceId, barberId } = req.body;
 
-        if (!barbershop || !startAt || !serviceId || !barberId) {
+        if (!startAt || !serviceId || !barberId) {
             return res.status(400).json({
-                message: 'barbershop, startAt, serviceId e barberId são obrigatórios'
+                message: 'startAt, serviceId e barberId são obrigatórios'
             })
         }
 
@@ -45,7 +45,7 @@ export class AppointmentController {
 
         // Create a new appointment
         const appointment = await AppointmentModel.create({
-            barbershop,
+            barbershop: req.barbershopId,
             startAt,
             endAt,
             service: serviceId,
@@ -56,8 +56,7 @@ export class AppointmentController {
     }
 
     async list(req: Request, res: Response) {
-        const barbershopId = req.headers['barbershop-id'];
-        const appointments = await AppointmentModel.find({ barbershop: barbershopId }).populate('service');
+        const appointments = await AppointmentModel.find({ barbershop: req.barbershopId }).populate('service');
 
         if (!appointments.length) {
             return res.status(404).json({ message: 'Agendamentos nao encontrados' });
@@ -68,11 +67,11 @@ export class AppointmentController {
 
     async updateStatus(req: Request, res: Response) {
         const { id } = req.params
-        const { barbershop, status } = req.body
+        const { status } = req.body
 
         // Check if the appointment exists
         const appointment = await AppointmentModel
-            .findOne({ barbershop, _id: id })
+            .findOne({ barbershop: req.barbershopId, _id: id })
             .populate('service')
             .populate('barber')
 
@@ -100,7 +99,7 @@ export class AppointmentController {
 
         if (status === 'completed') {
             await TransactionModel.create({
-                barbershop: barbershop,
+                barbershop: req.barbershopId,
                 appointment: appointment._id,
                 barber: appointment.barber,
                 amount: (appointment.service as any).price,
@@ -113,10 +112,9 @@ export class AppointmentController {
 
     async cancel(req: Request, res: Response) {
         const { id } = req.params;
-        const barbershopId = req.headers['barbershop-id'];
 
         // Check if the appointment exists
-        const appointment = await AppointmentModel.findOne({ barbershop: barbershopId, _id: id });
+        const appointment = await AppointmentModel.findOne({ barbershop: req.barbershopId, _id: id });
         if (!appointment) {
             return res.status(404).json({ message: 'Agendamento não encontrado' });
         }

@@ -36,6 +36,7 @@ export class ReportController {
         }
 
         const transactions = await TransactionModel.find({
+            barbershop: req.barbershopId,
             createdAt: { $gte: startOfDay, $lte: endOfDay }
         })
             .populate('barber')
@@ -93,6 +94,7 @@ export class ReportController {
         const endOfMonth = new Date(Number(year), Number(month), 0, 23, 59, 59, 999);
 
         const closes = await DailyCashCloseModel.find({
+            barbershop: req.barbershopId,
             date: { $gte: startOfMonth, $lte: endOfMonth }
         }).populate('byBarber.barber')
             .lean() as any[]
