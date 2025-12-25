@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import UserModel from '../src/modules/auth/models/UserModel';
+import UserModel from '../modules/auth/models/UserModel';
 
 async function createSuperAdmin() {
     await mongoose.connect(process.env.MONGO_URI as string);
