@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID', 'barbershop-id'],
 }))
 app.use('/barbershop', barbershopRoutes);
 app.use(authRoutes);
