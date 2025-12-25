@@ -10,7 +10,7 @@ const userController = new UserController()
 routes.post(
   '/users/create-admin',
   authMiddleware,
-  roleMiddleware('super-admin'),
+  roleMiddleware(['super-admin']),
   userController.createAdmin
 )
 
@@ -18,7 +18,7 @@ routes.post(
 routes.post(
   '/users/create-moderator',
   authMiddleware,
-  roleMiddleware('admin'),
+  roleMiddleware(['admin']),
   userController.createModerator
 )
 
